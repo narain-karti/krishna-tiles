@@ -1,22 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { useProject } from '../../context/ProjectContext';
-import { LayoutPattern, TileCategory, TileFinish, TileMaterial } from '../../types';
+import { LayoutPattern } from '../../types';
 import { getTileBackgroundStyle } from '../../utils/tileRenderer';
 import { formatINR, calculateSurfaceMaterial } from '../../utils/calculator';
 import { 
-  Sliders, 
-  Grid, 
-  Layers, 
   Search, 
   Check, 
   X, 
-  Plus, 
-  Trash2, 
   AlertCircle, 
-  HelpCircle,
-  Sparkles,
-  ArrowRight,
-  Filter
+  ArrowUpRight
 } from 'lucide-react';
 
 export const PropertiesInspectorPanel: React.FC = () => {
@@ -34,8 +26,6 @@ export const PropertiesInspectorPanel: React.FC = () => {
   // Catalogue filter states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedFinish, setSelectedFinish] = useState<string>('all');
-  const [selectedMaterial, setSelectedMaterial] = useState<string>('all');
 
   if (!activeRoom || !activeSurface) {
     return (
@@ -63,52 +53,50 @@ export const PropertiesInspectorPanel: React.FC = () => {
         if (!matchesName && !matchesSku && !matchesBrand && !matchesColor) return false;
       }
       if (selectedCategory !== 'all' && p.category !== selectedCategory) return false;
-      if (selectedFinish !== 'all' && p.finish !== selectedFinish) return false;
-      if (selectedMaterial !== 'all' && p.material !== selectedMaterial) return false;
       return true;
     });
-  }, [products, searchQuery, selectedCategory, selectedFinish, selectedMaterial]);
+  }, [products, searchQuery, selectedCategory]);
 
   const groutColors = [
     { label: 'Porcelain White', hex: '#FAF9F6' },
     { label: 'Warm Stone Grey', hex: '#D8D0C3' },
-    { label: 'Charcoal Shadow', hex: '#29251F' },
-    { label: 'Muted Brass Gold', hex: '#B89A63' },
+    { label: 'Carbon Black', hex: '#0A0A0A' },
+    { label: 'Electric Neon Accent', hex: '#CCFF00' },
   ];
 
   return (
-    <aside className="w-84 bg-white border-l border-border flex flex-col h-full select-none shrink-0 overflow-hidden shadow-subtle">
+    <aside className="w-84 bg-white border-l border-border flex flex-col h-full select-none shrink-0 overflow-hidden shadow-subtle font-sans">
       {/* Inspector Tabs Header */}
-      <div className="flex items-center border-b border-border bg-porcelain px-2 pt-2">
+      <div className="flex items-center border-b border-border bg-[#F8F8FA] p-1.5 space-x-1">
         <button
           onClick={() => setActiveTab('properties')}
-          className={`flex-1 py-2 text-xs font-semibold text-center border-b-2 transition-all ${
+          className={`flex-1 py-1.5 text-xs font-bold text-center rounded-full transition-all ${
             activeTab === 'properties' 
-              ? 'border-brass text-charcoal' 
-              : 'border-transparent text-muted hover:text-charcoal'
+              ? 'bg-carbon text-white shadow-sm' 
+              : 'text-muted hover:text-carbon'
           }`}
         >
           Properties
         </button>
         <button
           onClick={() => setActiveTab('catalogue')}
-          className={`flex-1 py-2 text-xs font-semibold text-center border-b-2 transition-all relative ${
+          className={`flex-1 py-1.5 text-xs font-bold text-center rounded-full transition-all ${
             activeTab === 'catalogue' 
-              ? 'border-brass text-charcoal' 
-              : 'border-transparent text-muted hover:text-charcoal'
+              ? 'bg-carbon text-white shadow-sm' 
+              : 'text-muted hover:text-carbon'
           }`}
         >
-          <span>Choose Tile</span>
-          <span className="ml-1 px-1.5 py-0.2 text-[9px] bg-brass/20 text-brass-dark rounded-full font-bold">
+          <span>Tiles</span>
+          <span className="ml-1.5 px-1.5 py-0.2 text-[9px] bg-neon text-carbon rounded-full font-extrabold">
             {products.length}
           </span>
         </button>
         <button
           onClick={() => setActiveTab('pricing')}
-          className={`flex-1 py-2 text-xs font-semibold text-center border-b-2 transition-all ${
+          className={`flex-1 py-1.5 text-xs font-bold text-center rounded-full transition-all ${
             activeTab === 'pricing' 
-              ? 'border-brass text-charcoal' 
-              : 'border-transparent text-muted hover:text-charcoal'
+              ? 'bg-carbon text-white shadow-sm' 
+              : 'text-muted hover:text-carbon'
           }`}
         >
           Pricing
@@ -116,18 +104,18 @@ export const PropertiesInspectorPanel: React.FC = () => {
       </div>
 
       {/* Surface Context Banner */}
-      <div className="p-3 bg-ivory/50 border-b border-border flex items-center justify-between text-xs">
+      <div className="p-3 bg-stone-light/30 border-b border-border flex items-center justify-between text-xs">
         <div>
-          <span className="text-[10px] uppercase font-mono text-muted tracking-wider block">
+          <span className="text-[10px] uppercase font-mono text-muted tracking-wider block font-bold">
             {activeRoom.name}
           </span>
-          <span className="font-semibold text-charcoal truncate block">
+          <span className="font-extrabold text-carbon truncate block">
             {activeSurface.name}
           </span>
         </div>
         <div className="text-right">
-          <span className="text-[10px] text-muted block">Required Area</span>
-          <span className="font-mono font-semibold text-charcoal">
+          <span className="text-[10px] text-muted block uppercase font-mono">Area</span>
+          <span className="font-mono font-bold text-carbon">
             {surfaceCalc.requiredAreaSqFt} sq.ft
           </span>
         </div>
@@ -137,22 +125,22 @@ export const PropertiesInspectorPanel: React.FC = () => {
       {activeTab === 'properties' && (
         <div className="flex-1 overflow-y-auto p-4 space-y-5 text-xs">
           
-          {/* Surface Name & Type */}
+          {/* Surface Name */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-charcoal uppercase tracking-wider">
+            <label className="text-[11px] font-bold text-carbon uppercase tracking-wider">
               Surface Label
             </label>
             <input
               type="text"
               value={activeSurface.name}
               onChange={(e) => updateSurface(activeRoom.id, activeSurface.id, { name: e.target.value })}
-              className="w-full px-3 py-1.5 border border-border rounded-lg bg-ivory-light text-charcoal font-medium focus:outline-none focus:ring-1 focus:ring-brass"
+              className="w-full px-3 py-2 border border-border rounded-xl bg-white text-carbon font-semibold focus:outline-none focus:ring-2 focus:ring-carbon"
             />
           </div>
 
           {/* Measured Dimensions */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-charcoal uppercase tracking-wider">
+            <label className="text-[11px] font-bold text-carbon uppercase tracking-wider">
               Physical Dimensions (Feet)
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -171,7 +159,7 @@ export const PropertiesInspectorPanel: React.FC = () => {
                       updateSurface(activeRoom.id, activeSurface.id, { lengthFt: val });
                     }
                   }}
-                  className="w-full px-3 py-1.5 border border-border rounded-lg bg-ivory-light text-charcoal font-semibold focus:outline-none focus:ring-1 focus:ring-brass"
+                  className="w-full px-3 py-2 border border-border rounded-xl bg-white text-carbon font-bold focus:outline-none focus:ring-2 focus:ring-carbon"
                 />
               </div>
 
@@ -190,7 +178,7 @@ export const PropertiesInspectorPanel: React.FC = () => {
                       updateSurface(activeRoom.id, activeSurface.id, { widthFt: val });
                     }
                   }}
-                  className="w-full px-3 py-1.5 border border-border rounded-lg bg-ivory-light text-charcoal font-semibold focus:outline-none focus:ring-1 focus:ring-brass"
+                  className="w-full px-3 py-2 border border-border rounded-xl bg-white text-carbon font-bold focus:outline-none focus:ring-2 focus:ring-carbon"
                 />
               </div>
             </div>
@@ -199,10 +187,10 @@ export const PropertiesInspectorPanel: React.FC = () => {
           {/* Wastage Allowance */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-[11px] font-semibold text-charcoal uppercase tracking-wider">
+              <label className="text-[11px] font-bold text-carbon uppercase tracking-wider">
                 Cutting Wastage Margin
               </label>
-              <span className="font-mono font-semibold text-brass-dark bg-brass/15 px-2 py-0.5 rounded">
+              <span className="font-mono font-extrabold text-carbon bg-neon px-2.5 py-0.5 rounded-full text-[10px]">
                 +{activeSurface.wastagePercentage}%
               </span>
             </div>
@@ -211,24 +199,21 @@ export const PropertiesInspectorPanel: React.FC = () => {
                 <button
                   key={pct}
                   onClick={() => updateSurface(activeRoom.id, activeSurface.id, { wastagePercentage: pct })}
-                  className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                  className={`flex-1 py-1.5 text-xs rounded-full border transition-colors ${
                     activeSurface.wastagePercentage === pct
-                      ? 'bg-charcoal text-ivory border-charcoal font-semibold'
-                      : 'bg-white text-muted hover:text-charcoal border-border'
+                      ? 'bg-carbon text-white border-carbon font-bold'
+                      : 'bg-white text-muted hover:text-carbon border-border'
                   }`}
                 >
                   {pct}%
                 </button>
               ))}
             </div>
-            <p className="text-[10px] text-muted leading-tight">
-              Recommended: 10% for standard rectangular rooms; 15% for diagonal or herringbone patterns.
-            </p>
           </div>
 
           {/* Tile Layout Pattern */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-charcoal uppercase tracking-wider">
+            <label className="text-[11px] font-bold text-carbon uppercase tracking-wider">
               Installation Pattern
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -236,10 +221,10 @@ export const PropertiesInspectorPanel: React.FC = () => {
                 <button
                   key={pat}
                   onClick={() => updateSurface(activeRoom.id, activeSurface.id, { layoutPattern: pat })}
-                  className={`py-2 px-2.5 rounded-lg border text-left capitalize transition-all ${
+                  className={`py-2 px-3 rounded-xl border text-left capitalize transition-all ${
                     activeSurface.layoutPattern === pat
-                      ? 'bg-ivory border-brass font-semibold text-charcoal ring-1 ring-brass'
-                      : 'bg-white border-border text-muted hover:text-charcoal'
+                      ? 'bg-carbon text-white font-bold ring-2 ring-neon border-carbon'
+                      : 'bg-white border-border text-muted hover:text-carbon'
                   }`}
                 >
                   {pat.replace('-', ' ')}
@@ -250,7 +235,7 @@ export const PropertiesInspectorPanel: React.FC = () => {
 
           {/* Grout Width & Color */}
           <div className="space-y-2 pt-2 border-t border-border">
-            <label className="text-[11px] font-semibold text-charcoal uppercase tracking-wider">
+            <label className="text-[11px] font-bold text-carbon uppercase tracking-wider">
               Grout Joint & Color
             </label>
             
@@ -260,9 +245,9 @@ export const PropertiesInspectorPanel: React.FC = () => {
                 <button
                   key={mm}
                   onClick={() => updateSurface(activeRoom.id, activeSurface.id, { groutWidthMm: mm })}
-                  className={`px-2.5 py-1 text-xs rounded border ${
+                  className={`px-3 py-1 text-xs rounded-full border ${
                     activeSurface.groutWidthMm === mm
-                      ? 'bg-charcoal text-ivory border-charcoal font-semibold'
+                      ? 'bg-carbon text-white border-carbon font-bold'
                       : 'bg-white text-muted border-border'
                   }`}
                 >
@@ -277,7 +262,7 @@ export const PropertiesInspectorPanel: React.FC = () => {
                   key={gc.hex}
                   onClick={() => updateSurface(activeRoom.id, activeSurface.id, { groutColorHex: gc.hex })}
                   className={`w-6 h-6 rounded-full border shadow-sm transition-transform ${
-                    activeSurface.groutColorHex === gc.hex ? 'scale-125 ring-2 ring-brass' : 'opacity-80 hover:opacity-100'
+                    activeSurface.groutColorHex === gc.hex ? 'scale-125 ring-2 ring-carbon' : 'opacity-70 hover:opacity-100'
                   }`}
                   style={{ backgroundColor: gc.hex }}
                   title={gc.label}
@@ -300,8 +285,8 @@ export const PropertiesInspectorPanel: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by model, SKU, finish..."
-              className="w-full pl-8 pr-3 py-1.5 text-xs border border-border rounded-lg bg-ivory-light text-charcoal focus:outline-none focus:ring-1 focus:ring-brass"
+              placeholder="Search model, finish..."
+              className="w-full pl-8 pr-3 py-1.5 text-xs border border-border rounded-full bg-white text-carbon focus:outline-none focus:ring-2 focus:ring-carbon"
             />
           </div>
 
@@ -311,10 +296,10 @@ export const PropertiesInspectorPanel: React.FC = () => {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-2 py-0.5 rounded-full capitalize transition-colors ${
+                className={`px-2.5 py-1 rounded-full capitalize transition-colors font-semibold ${
                   selectedCategory === cat 
-                    ? 'bg-charcoal text-ivory font-semibold' 
-                    : 'bg-stone-light/60 text-muted hover:text-charcoal'
+                    ? 'bg-carbon text-white' 
+                    : 'bg-stone-light/50 text-muted hover:text-carbon'
                 }`}
               >
                 {cat}
@@ -324,17 +309,17 @@ export const PropertiesInspectorPanel: React.FC = () => {
 
           {/* Active Product Swatch Card if selected */}
           {assignedProduct && (
-            <div className="p-3 bg-brass-muted border border-brass/50 rounded-xl flex items-center justify-between">
+            <div className="p-3 bg-neon/15 border border-neon rounded-2xl flex items-center justify-between">
               <div className="flex items-center space-x-2.5 min-w-0">
                 <div 
-                  className="w-10 h-10 rounded-lg border border-brass shrink-0 shadow-sm"
+                  className="w-10 h-10 rounded-xl border border-carbon shrink-0 shadow-sm"
                   style={getTileBackgroundStyle(assignedProduct, 'grid', 2, '#D8D0C3', 0)}
                 />
                 <div className="truncate">
-                  <span className="text-[10px] text-brass-dark font-semibold uppercase tracking-wider block">
-                    Currently Applied
+                  <span className="text-[10px] text-carbon font-extrabold uppercase tracking-wider block">
+                    Applied Tile
                   </span>
-                  <span className="text-xs font-bold text-charcoal truncate block">
+                  <span className="text-xs font-bold text-carbon truncate block">
                     {assignedProduct.name}
                   </span>
                   <span className="text-[10px] text-muted">
@@ -345,7 +330,7 @@ export const PropertiesInspectorPanel: React.FC = () => {
 
               <button
                 onClick={() => assignTileToSurface(activeRoom.id, activeSurface.id, '')}
-                className="p-1 text-muted hover:text-red-600 rounded"
+                className="p-1 text-muted hover:text-red-600 rounded-full"
                 title="Remove tile assignment"
               >
                 <X className="w-4 h-4" />
@@ -363,15 +348,15 @@ export const PropertiesInspectorPanel: React.FC = () => {
                 <div
                   key={prod.id}
                   onClick={() => assignTileToSurface(activeRoom.id, activeSurface.id, prod.id)}
-                  className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center space-x-3 ${
+                  className={`p-3 rounded-2xl border cursor-pointer transition-all flex items-center space-x-3 ${
                     isAssigned
-                      ? 'border-brass bg-ivory shadow-sm ring-1 ring-brass'
-                      : 'border-border/80 bg-white hover:border-brass/70 hover:shadow-subtle'
+                      ? 'border-carbon bg-[#F6F6F8] shadow-sm ring-2 ring-neon'
+                      : 'border-border/80 bg-white hover:border-carbon'
                   }`}
                 >
                   {/* Swatch */}
                   <div 
-                    className="w-12 h-12 rounded-lg border border-border shrink-0 shadow-inner relative overflow-hidden"
+                    className="w-12 h-12 rounded-xl border border-border shrink-0 shadow-inner relative overflow-hidden"
                     style={{
                       ...swatch,
                       backgroundSize: '24px 24px',
@@ -380,21 +365,21 @@ export const PropertiesInspectorPanel: React.FC = () => {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-mono text-muted uppercase font-semibold">
+                      <span className="text-[9px] font-mono text-muted uppercase font-bold">
                         {prod.sku}
                       </span>
                       {prod.priceBasis === 'quote' ? (
-                        <span className="text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded font-medium">
+                        <span className="text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded-full font-bold">
                           Quote Req.
                         </span>
                       ) : (
-                        <span className="text-xs font-bold text-charcoal">
+                        <span className="text-xs font-extrabold text-carbon">
                           {formatINR(prod.pricePerUnit || 0)} <span className="text-[10px] text-muted font-normal">/{prod.priceBasis}</span>
                         </span>
                       )}
                     </div>
 
-                    <h4 className="text-xs font-semibold text-charcoal truncate mt-0.5">
+                    <h4 className="text-xs font-bold text-carbon truncate mt-0.5">
                       {prod.name}
                     </h4>
 
@@ -406,7 +391,7 @@ export const PropertiesInspectorPanel: React.FC = () => {
                   </div>
 
                   {isAssigned && (
-                    <div className="w-5 h-5 rounded-full bg-brass text-charcoal flex items-center justify-center shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-neon text-carbon flex items-center justify-center shrink-0">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
                   )}
@@ -421,46 +406,46 @@ export const PropertiesInspectorPanel: React.FC = () => {
       {activeTab === 'pricing' && (
         <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
           
-          <div className="p-3 bg-white rounded-xl border border-border shadow-subtle space-y-2">
-            <span className="text-[10px] uppercase font-semibold text-muted tracking-wider block">
+          <div className="p-4 bg-white rounded-2xl border border-border shadow-subtle space-y-2">
+            <span className="text-[10px] uppercase font-bold text-muted tracking-wider block">
               Surface Area Calculations
             </span>
 
             <div className="flex justify-between py-1 border-b border-border/40">
               <span className="text-muted">Gross Area ({activeSurface.lengthFt} × {activeSurface.widthFt} ft)</span>
-              <span className="font-mono text-charcoal font-medium">{surfaceCalc.grossAreaSqFt} sq.ft</span>
+              <span className="font-mono text-carbon font-bold">{surfaceCalc.grossAreaSqFt} sq.ft</span>
             </div>
 
             {surfaceCalc.deductionAreaSqFt > 0 && (
-              <div className="flex justify-between py-1 border-b border-border/40 text-red-600">
+              <div className="flex justify-between py-1 border-b border-border/40 text-red-600 font-bold">
                 <span>Openings Deductions</span>
-                <span className="font-mono font-medium">-{surfaceCalc.deductionAreaSqFt} sq.ft</span>
+                <span className="font-mono">-{surfaceCalc.deductionAreaSqFt} sq.ft</span>
               </div>
             )}
 
-            <div className="flex justify-between py-1 border-b border-border/40 font-semibold text-charcoal">
+            <div className="flex justify-between py-1 border-b border-border/40 font-extrabold text-carbon">
               <span>Net Surface Area</span>
               <span className="font-mono">{surfaceCalc.netAreaSqFt} sq.ft</span>
             </div>
 
             <div className="flex justify-between py-1 border-b border-border/40 text-muted">
               <span>Wastage Allowance (+{activeSurface.wastagePercentage}%)</span>
-              <span className="font-mono">
+              <span className="font-mono font-bold">
                 +{(surfaceCalc.requiredAreaSqFt - surfaceCalc.netAreaSqFt).toFixed(2)} sq.ft
               </span>
             </div>
 
-            <div className="flex justify-between pt-1 font-bold text-charcoal">
+            <div className="flex justify-between pt-1 font-extrabold text-carbon">
               <span>Procurement Area</span>
-              <span className="font-mono text-brass-dark">
+              <span className="font-mono text-carbon">
                 {surfaceCalc.requiredAreaSqFt} sq.ft ({surfaceCalc.requiredAreaSqM} m²)
               </span>
             </div>
           </div>
 
           {/* Packaging & Pricing */}
-          <div className="p-3 bg-white rounded-xl border border-border shadow-subtle space-y-2">
-            <span className="text-[10px] uppercase font-semibold text-muted tracking-wider block">
+          <div className="p-4 bg-white rounded-2xl border border-border shadow-subtle space-y-2">
+            <span className="text-[10px] uppercase font-bold text-muted tracking-wider block">
               Tile Procurement & Packs
             </span>
 
@@ -468,11 +453,11 @@ export const PropertiesInspectorPanel: React.FC = () => {
               <>
                 <div className="flex justify-between py-1 border-b border-border/40">
                   <span className="text-muted">Price Basis</span>
-                  <span className="font-mono uppercase font-semibold text-charcoal">{assignedProduct.priceBasis}</span>
+                  <span className="font-mono uppercase font-bold text-carbon">{assignedProduct.priceBasis}</span>
                 </div>
 
                 {assignedProduct.priceBasis === 'quote' ? (
-                  <div className="p-2.5 bg-amber-50 rounded-lg border border-amber-200 text-amber-800 text-[11px] flex items-start space-x-2">
+                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-800 text-[11px] flex items-start space-x-2">
                     <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
                     <span>This tile requires showroom batch confirmation. Final price will be confirmed in your quote enquiry.</span>
                   </div>
@@ -480,7 +465,7 @@ export const PropertiesInspectorPanel: React.FC = () => {
                   <>
                     <div className="flex justify-between py-1 border-b border-border/40">
                       <span className="text-muted">Unit Rate</span>
-                      <span className="font-mono font-semibold text-charcoal">
+                      <span className="font-mono font-bold text-carbon">
                         {formatINR(assignedProduct.pricePerUnit || 0)} / {assignedProduct.priceBasis}
                       </span>
                     </div>
@@ -488,15 +473,15 @@ export const PropertiesInspectorPanel: React.FC = () => {
                     {surfaceCalc.packsRequired && (
                       <div className="flex justify-between py-1 border-b border-border/40">
                         <span className="text-muted">Boxes Required</span>
-                        <span className="font-mono font-semibold text-charcoal">
+                        <span className="font-mono font-bold text-carbon">
                           {surfaceCalc.packsRequired} boxes ({assignedProduct.packCoverageSqFt || 15.5} sq.ft/box)
                         </span>
                       </div>
                     )}
 
-                    <div className="flex justify-between pt-2 text-sm font-bold text-charcoal">
-                      <span>Estimated Material Cost</span>
-                      <span className="font-mono font-serif text-charcoal">
+                    <div className="flex justify-between pt-2 text-sm font-extrabold text-carbon">
+                      <span>Material Cost</span>
+                      <span className="font-mono text-carbon">
                         {formatINR(surfaceCalc.materialCostINR)}
                       </span>
                     </div>

@@ -7,22 +7,29 @@ export default {
   theme: {
     extend: {
       colors: {
+        neon: {
+          DEFAULT: '#CCFF00',
+          light: '#D8FF33',
+          dark: '#B0DB00',
+          muted: 'rgba(204, 255, 0, 0.15)',
+        },
+        carbon: {
+          DEFAULT: '#0A0A0A',
+          surface: '#121212',
+          card: '#181818',
+          border: '#262626',
+          muted: '#2E2E2E',
+        },
+        // Preserve ivory/stone/brass tokens for material swatches
         ivory: {
           DEFAULT: '#F3EEE5',
           light: '#FAF7F2',
           dark: '#E7DFD3',
         },
-        porcelain: '#FAF9F6',
-        charcoal: {
-          DEFAULT: '#29251F',
-          soft: '#3D3830',
-          muted: '#524B41',
-        },
         brass: {
           DEFAULT: '#B89A63',
           light: '#CEB586',
           dark: '#9A7D46',
-          muted: 'rgba(184, 154, 99, 0.15)',
         },
         stone: {
           DEFAULT: '#D8D0C3',
@@ -30,30 +37,30 @@ export default {
           dark: '#C0B7A7',
         },
         border: {
-          DEFAULT: '#E7E0D6',
-          dark: '#D5CBBF',
+          DEFAULT: '#E5E5E8',
+          dark: '#262626',
         },
         muted: {
-          DEFAULT: '#777168',
-          light: '#9E978D',
-          dark: '#58534C',
+          DEFAULT: '#71717A',
+          light: '#A1A1AA',
+          dark: '#3F3F46',
         }
       },
       fontFamily: {
-        serif: ['"Cormorant Garamond"', '"Playfair Display"', 'Georgia', 'serif'],
-        display: ['"Playfair Display"', '"Cormorant Garamond"', 'serif'],
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Syne', 'Plus Jakarta Sans', 'sans-serif'],
+        stencil: ['"Bebas Neue"', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'subtle': '0 2px 8px -2px rgba(41, 37, 31, 0.05), 0 1px 4px -1px rgba(41, 37, 31, 0.03)',
-        'elevated': '0 10px 30px -5px rgba(41, 37, 31, 0.08), 0 4px 12px -2px rgba(41, 37, 31, 0.04)',
-        'modal': '0 25px 50px -12px rgba(41, 37, 31, 0.25)',
-        'brass-glow': '0 0 20px -3px rgba(184, 154, 99, 0.35)',
+        'subtle': '0 2px 8px -2px rgba(10, 10, 10, 0.05), 0 1px 4px -1px rgba(10, 10, 10, 0.03)',
+        'elevated': '0 20px 40px -15px rgba(10, 10, 10, 0.15)',
+        'neon-glow': '0 0 25px -4px rgba(204, 255, 0, 0.5)',
+        'modal': '0 25px 60px -12px rgba(10, 10, 10, 0.4)',
       },
       borderRadius: {
-        'xl': '1rem',
-        '2xl': '1.5rem',
+        '2xl': '1.25rem',
         '3xl': '2rem',
+        '4xl': '2.5rem',
       }
     },
   },
